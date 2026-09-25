@@ -58,27 +58,81 @@ if (window.snowyBotRunning) {
         });
     }
 
-    const startingPocketChange = Number(shakeThePiggyBank());
-    const tinyPeanutSize = Number((startingPocketChange / 1440000).toFixed(8));
-    const backupPeanut = Number(tinyPeanutSize);
-    const tenPeanuts = Number(tinyPeanutSize * 10);
+    // ============================================================================
+    // STATE PERSISTENCE HELPERS (snowybotbackup)
+    // ============================================================================
 
-    var walletStash = startingPocketChange;
-    var areWeRichYet = false;
-    var oopsieCounter = 0;
-    var previousWalletState = Number(parseFloat(walletStash));
-    var oldTicketStub = 0;
-    var shinyNewTicket = 0;
-    let totalSessionWins = Number(countTheHappyWins());
-    let totalSessionLosses = Number(countTheSadLosses());
-    let baseWinReference = Number(parseFloat(totalSessionWins));
-    let baseLossReference = Number(parseFloat(totalSessionLosses));
-    let currentWagerAmount = backupPeanut;
-    let previousWagerAmount = Number(parseFloat(currentWagerAmount));
-    var luckyCoinFlip = 0;
-    var checkpointJuice = parseFloat(startingPocketChange);
-    var wobbleFactor = 1;
-    var safetyCheckpoint = parseFloat((Math.floor(walletStash / (tinyPeanutSize * 10))) * (tinyPeanutSize * 10));
+    function saveState() {
+        const botState = {
+            walletStash,
+            startingPocketChange,
+            tinyPeanutSize,
+            backupPeanut,
+            tenPeanuts,
+            areWeRichYet,
+            oopsieCounter,
+            previousWalletState,
+            oldTicketStub,
+            shinyNewTicket,
+            totalSessionWins,
+            totalSessionLosses,
+            baseWinReference,
+            baseLossReference,
+            currentWagerAmount,
+            previousWagerAmount,
+            luckyCoinFlip,
+            checkpointJuice,
+            wobbleFactor,
+            safetyCheckpoint
+        };
+        localStorage.setItem("snowybotbackup", JSON.stringify(botState));
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem("snowybotbackup");
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error("[ERROR] Failed to parse snowybotbackup state.", e);
+            }
+        }
+        return null;
+    }
+
+    // ============================================================================
+    // INITIALIZATION & VARIABLES SETUP
+    // ============================================================================
+
+    const savedState = loadState();
+
+    const startingPocketChange = savedState ? savedState.startingPocketChange : Number(shakeThePiggyBank());
+    const tinyPeanutSize = savedState ? savedState.tinyPeanutSize : Number((startingPocketChange / 1440000).toFixed(8));
+    const backupPeanut = savedState ? savedState.backupPeanut : Number(tinyPeanutSize);
+    const tenPeanuts = savedState ? savedState.tenPeanuts : Number(tinyPeanutSize * 10);
+
+    var walletStash = savedState ? savedState.walletStash : startingPocketChange;
+    var areWeRichYet = savedState ? savedState.areWeRichYet : false;
+    var oopsieCounter = savedState ? savedState.oopsieCounter : 0;
+    var previousWalletState = savedState ? savedState.previousWalletState : Number(parseFloat(walletStash));
+    var oldTicketStub = savedState ? savedState.oldTicketStub : 0;
+    var shinyNewTicket = savedState ? savedState.shinyNewTicket : 0;
+
+    let totalSessionWins = savedState ? savedState.totalSessionWins : Number(countTheHappyWins());
+    let totalSessionLosses = savedState ? savedState.totalSessionLosses : Number(countTheSadLosses());
+    let baseWinReference = savedState ? savedState.baseWinReference : Number(parseFloat(totalSessionWins));
+    let baseLossReference = savedState ? savedState.baseLossReference : Number(parseFloat(totalSessionLosses));
+    let currentWagerAmount = savedState ? savedState.currentWagerAmount : backupPeanut;
+    let previousWagerAmount = savedState ? savedState.previousWagerAmount : Number(parseFloat(currentWagerAmount));
+
+    var luckyCoinFlip = savedState ? savedState.luckyCoinFlip : 0;
+    var checkpointJuice = savedState ? savedState.checkpointJuice : parseFloat(startingPocketChange);
+    var wobbleFactor = savedState ? savedState.wobbleFactor : 1;
+    var safetyCheckpoint = savedState ? savedState.safetyCheckpoint : parseFloat((Math.floor(walletStash / (tinyPeanutSize * 10))) * (tinyPeanutSize * 10));
+
+    if (savedState) {
+        console.log("[RESTORE] SnowyBot state successfully loaded from snowybotbackup!");
+    }
 
     function inspectRollOutcome() {
         const rollElement = document.getElementById("me");
@@ -183,7 +237,7 @@ if (window.snowyBotRunning) {
         if ((currentWagerAmount > (backupPeanut * 1.5)) && (walletStash > (checkpointJuice + (currentWagerAmount * 4.9)))) {
             currentWagerAmount = (currentWagerAmount * 2);
             checkpointJuice = parseFloat(walletStash);
-        }   
+        }
         if ((currentWagerAmount > (backupPeanut * 1.5)) && (walletStash < (checkpointJuice - (currentWagerAmount * 4.9)))) {
             currentWagerAmount = (currentWagerAmount * 2);
             wobbleFactor = 0;
@@ -202,6 +256,7 @@ if (window.snowyBotRunning) {
             var computedNextBet = await calculateNextProgressionStep(previousWagerAmount);
             if (walletStash >= 144) {
                 console.log(`TARGET REACHED. Halting execution.`);
+                localStorage.removeItem("snowybotbackup");
                 window.snowyBotRunning = false;
                 return;
             }
@@ -215,30 +270,33 @@ if (window.snowyBotRunning) {
             totalSessionWins = Number(countTheHappyWins());
             totalSessionLosses = Number(countTheSadLosses());
             if ((shinyNewTicket == oldTicketStub) && (oopsieCounter == 0)) {
-                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 await executePlacementRoutine(computedNextBet, 49.5);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
                 oopsieCounter = oopsieCounter + 1;
                 shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
+                saveState();
             }
             if (((shinyNewTicket > oldTicketStub) && (oopsieCounter >= 1)) && (luckyCoinFlip == 1) && (walletStash == Number(((previousWalletState + previousWagerAmount) * 1).toFixed(8))) && (totalSessionWins == (baseWinReference + 1)) && (totalSessionLosses == baseLossReference)) {
-                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 await executePlacementRoutine(computedNextBet, 49.5);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 baseWinReference = baseWinReference + 1;
                 previousWalletState = Number(parseFloat(walletStash));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
                 shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
+                saveState();
             }
             if (((shinyNewTicket > oldTicketStub) && (oopsieCounter >= 1)) && (luckyCoinFlip == 0) && (walletStash == Number(((previousWalletState - previousWagerAmount) * 1).toFixed(8))) && (totalSessionLosses == (baseLossReference + 1)) && (totalSessionWins == baseWinReference)) {
-                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 await executePlacementRoutine(computedNextBet, 49.5);
                 baseLossReference = baseLossReference + 1;
                 previousWalletState = Number(parseFloat(walletStash));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
                 shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
+                saveState();
             }
         }
         await pauseExecution(50);
