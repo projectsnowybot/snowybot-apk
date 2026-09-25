@@ -1,0 +1,16 @@
+# Android / Gradle
+**/.gradle/
+**/build/
+**/captures/
+**/.idea/
+**/*.iml
+**/local.properties
+**/androidTest-results/
+**/bin/
+**/gen/
+**/out/
+**/.cxx/
+
+# OS / editor
+.DS_Store
+Thumbs.db
