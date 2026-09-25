@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212">
+
+    <!-- Top Bar with domain title and Run button on top right -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#1F1F1F"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:text="just-dice.com"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_run_script"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:text="Run SnowyBot"
+            android:textAllCaps="false"
+            android:backgroundTint="#2E7D32"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
+
+    <!-- WebView for just-dice.com -->
+    <WebView
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Console Header Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="#2A2A2A"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Console Logs"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Console Window (fixed 5 lines high = 96dp) -->
+    <ScrollView
+        android:id="@+id/scroll_console"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:background="#000000"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/txt_console_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#00FF00"
+            android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:text="[System] Console initialized. Ready for just-dice.com logs.\n" />
+    </ScrollView>
+
+</LinearLayout>
