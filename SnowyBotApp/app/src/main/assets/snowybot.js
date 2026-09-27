@@ -269,33 +269,31 @@ if (window.snowyBotRunning) {
             }
             totalSessionWins = Number(countTheHappyWins());
             totalSessionLosses = Number(countTheSadLosses());
-            if ((shinyNewTicket == oldTicketStub) && (oopsieCounter == 0)) {
-                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+            shinyNewTicket = fetchLatestWagerId();
+            if ((shinyNewTicket > oldTicketStub) && (oopsieCounter == 0)) {
+                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 await executePlacementRoutine(computedNextBet, 49.5);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
                 oopsieCounter = oopsieCounter + 1;
-                shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
                 saveState();
             }
             if (((shinyNewTicket > oldTicketStub) && (oopsieCounter >= 1)) && (luckyCoinFlip == 1) && (walletStash == Number(((previousWalletState + previousWagerAmount) * 1).toFixed(8))) && (totalSessionWins == (baseWinReference + 1)) && (totalSessionLosses == baseLossReference)) {
-                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 await executePlacementRoutine(computedNextBet, 49.5);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 baseWinReference = baseWinReference + 1;
                 previousWalletState = Number(parseFloat(walletStash));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
-                shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
                 saveState();
             }
             if (((shinyNewTicket > oldTicketStub) && (oopsieCounter >= 1)) && (luckyCoinFlip == 0) && (walletStash == Number(((previousWalletState - previousWagerAmount) * 1).toFixed(8))) && (totalSessionLosses == (baseLossReference + 1)) && (totalSessionWins == baseWinReference)) {
-                console.log(`[CONFIRMED] #${shinyNewTicket} | Balance: ${walletStash.toFixed(8)} | Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
+                console.log(`Bet: ${(computedNextBet * 1).toFixed(8)} | Total Profit: ${((walletStash - startingPocketChange)).toFixed(8)}`);
                 previousWagerAmount = Number(parseFloat(computedNextBet));
                 await executePlacementRoutine(computedNextBet, 49.5);
                 baseLossReference = baseLossReference + 1;
                 previousWalletState = Number(parseFloat(walletStash));
                 oldTicketStub = Number(parseFloat(shinyNewTicket));
-                shinyNewTicket = await waitForBetResultConfirmation(oldTicketStub);
                 saveState();
             }
         }
@@ -303,20 +301,6 @@ if (window.snowyBotRunning) {
         await runPrimaryBettingLoop();
     }
 
-    async function waitForBetResultConfirmation(targetBetId) {
-        return new Promise((resolvePromise) => {
-            async function pollBet() {
-                const detectedBetId = fetchLatestWagerId();
-                if ((detectedBetId > targetBetId) || areWeRichYet) {
-                    resolvePromise(detectedBetId);
-                    return;
-                }
-                await pauseExecution(50);
-                pollBet();
-            }
-            pollBet();
-        });
-    }
 
     // ============================================================================
     // INITIALIZATION & LAUNCH
