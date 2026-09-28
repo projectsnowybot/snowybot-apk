@@ -18,3 +18,7 @@ cd SnowyBotApp
 ```
 
 The app is configured for Android SDK 34 and uses an appcompat-based UI.
+
+use at your own risk of funds snowybot and snowy does not replace any lost funds
+
+there is no guarantee of success
