@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.Snowybottext" parent="Theme.MaterialComponents.Light" />
+</resources>
