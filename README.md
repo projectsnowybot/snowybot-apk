@@ -1,8 +1,9 @@
 # SnowyBot APK
 
 This repository contains the Android project for the SnowyBot app, including the Gradle sources and a packaged APK artifact.
-release is at 
-https://github.com/projectsnowybot/snowybot-apk/releases/
+latest release is at 
+
+https://www.mediafire.com/file/ean4z4qqwolnrac/snowybot.apk/file
 ## Project layout
 
 - `snowybottext/` – Android Studio / Gradle project
