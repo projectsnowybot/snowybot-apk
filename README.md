@@ -5,15 +5,14 @@ release is at
 https://github.com/projectsnowybot/snowybot-apk/releases/
 ## Project layout
 
-- `SnowyBotApp/` – Android Studio / Gradle project
-- `snowybot.apk` – packaged app artifact
+- `snowybottext/` – Android Studio / Gradle project
 
 ## Build
 
 From the project directory:
 
 ```bash
-cd SnowyBotApp
+cd snowybottext
 ./gradlew assembleDebug
 ```
 
