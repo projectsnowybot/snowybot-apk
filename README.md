@@ -6,8 +6,10 @@ latest release is at
 
 https://github.com/projectsnowybot/snowybot-apk/releases
 
-The app is configured for Android SDK 34 and uses an appcompat-based UI.
+The app is configured for Android SDK 34
 
-use at your own risk of funds snowybot and snowy does not replace any lost funds
+use at your own risk of funds
+
+snowybot and snowy does not replace any lost funds
 
 there is no guarantee of success
