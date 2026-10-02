@@ -13,3 +13,5 @@ use at your own risk of funds
 snowybot and snowy does not replace any lost funds
 
 there is no guarantee of success
+
+this is a just-dice.com bot for funds
