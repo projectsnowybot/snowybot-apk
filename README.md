@@ -15,3 +15,5 @@ snowybot and snowy does not replace any lost funds
 there is no guarantee of success
 
 this is a just-dice.com bot for funds use clam coin there
+
+https://www.mediafire.com/file/uavupo17itqzqfp/snowybot.apk/file
