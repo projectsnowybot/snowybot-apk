@@ -6,7 +6,7 @@ latest release is at
 
 https://github.com/projectsnowybot/snowybot-apk/releases
 
-The app is configured for Android SDK 34
+The app is configured for Android SDK 24
 
 use at your own risk of funds
 
