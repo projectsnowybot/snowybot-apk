@@ -57,6 +57,22 @@ class PeanutEngineTest {
     }
 
     @Test
+    fun progressionRejectsNonFiniteOrNonPositiveWalletBalances() {
+        val engine = PeanutEngine()
+        engine.initialize(10.0)
+
+        val invalidBalances = listOf(Double.NaN, 0.0, -1.0)
+        for (balance in invalidBalances) {
+            try {
+                engine.calculateNextProgressionStep(0.00001, balance)
+                throw AssertionError("Wallet balance must be a positive finite value")
+            } catch (expected: IllegalArgumentException) {
+                assertEquals("Wallet stash must be a positive finite value", expected.message)
+            }
+        }
+    }
+
+    @Test
     fun testLowWagerGainProgression() {
         val engine = PeanutEngine()
         val initialBalance = 10.0
