@@ -98,6 +98,9 @@ class PeanutEngine(
         currentWalletStash: Double,
         onLog: ((String) -> Unit)? = null
     ): Double {
+        require(currentWalletStash.isFinite() && currentWalletStash > 0.0) {
+            "Wallet stash must be a positive finite value"
+        }
         val walletStash = currentWalletStash
         var currentWager = incomingWager
         var wobble = state.wobbleFactor
@@ -225,6 +228,9 @@ class PeanutEngine(
         targetLimit: Double = Double.POSITIVE_INFINITY,
         onLog: ((String) -> Unit)? = null
     ): Double? {
+        require(walletStash.isFinite() && walletStash > 0.0) {
+            "Wallet stash must be a positive finite value"
+        }
         val oldTicket = state.oldTicketStub
         val oopsie = state.oopsieCounter
 
