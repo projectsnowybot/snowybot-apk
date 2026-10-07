@@ -18,10 +18,10 @@ android {
         targetSdk = 37
         versionCode = providers.gradleProperty("versionCode").orNull?.toIntOrNull()
             ?: (findProperty("versionCode") as? String)?.toIntOrNull()
-            ?: 18
+            ?: 19
         versionName = providers.gradleProperty("versionName").orNull
             ?: (findProperty("versionName") as? String)
-            ?: "1.0.18"
+            ?: "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

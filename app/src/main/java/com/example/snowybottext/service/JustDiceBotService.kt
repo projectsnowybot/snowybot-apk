@@ -714,6 +714,10 @@ class JustDiceBotService : Service(), JustDiceBridgeListener {
         if (fullResetRequested) return
         if (Looper.myLooper() != Looper.getMainLooper()) { serviceScope.launch { onWagerResult(wagerId, betAmount, rollResult, isWin, profit, balanceAfter) }; return }
         latestWagerResult = WagerResult(betAmount, isWin)
+        if (betAmount.isFinite() && betAmount > 0.0) {
+            currentWagerState.acceptScriptAmount(betAmount)
+            currentWagerFlow.value = currentWagerState.amount
+        }
         serviceScope.launch {
             db.rollDao().insertRoll(RollEntity(wagerId = wagerId, betAmount = betAmount, rollResult = rollResult, isWin = isWin, profit = profit, balanceAfter = balanceAfter, timestamp = System.currentTimeMillis()))
             if (balanceAfter.isFinite() && balanceAfter > 0.0) {
@@ -738,7 +742,12 @@ class JustDiceBotService : Service(), JustDiceBridgeListener {
                 webBridge?.markWagerCompleted()
             }
             if (engine.state.startingPocketChange == 0.0 && balanceAfter > 0.0) engine.initialize(balanceAfter, onLog = ::onLog)
-            botStateRepository.saveBotState(engine.state)
+            val savedState = engine.state.copy(
+                walletStash = balanceAfter.takeIf { it.isFinite() && it > 0.0 } ?: engine.state.walletStash,
+                currentWagerAmount = betAmount.takeIf { it.isFinite() && it > 0.0 } ?: engine.state.currentWagerAmount,
+                previousWagerAmount = engine.state.currentWagerAmount,
+            )
+            botStateRepository.saveBotState(savedState)
             updateNotification()
         }
     }
