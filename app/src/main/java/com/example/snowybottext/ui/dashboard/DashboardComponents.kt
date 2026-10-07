@@ -140,11 +140,15 @@ fun HeroWalletCard(walletStash: Double, currentWager: Double, profitLoss: Double
 /** Shrinks monospace metrics only when their glyphs would exceed the available width. */
 internal fun metricFontSize(text: String, availableWidth: Dp, baseFontSize: TextUnit): TextUnit {
     val minimumFontSize = 12.sp
-    // Monospace glyphs are approximately 0.6em wide. Do not keep a fixed-size floor for
-    // short values: a 10–11 character value can still overflow a narrow bet/profit column.
     val estimatedFitSize = availableWidth.value /
         (text.length.coerceAtLeast(1) * 0.6f)
-    return minOf(baseFontSize.value, maxOf(minimumFontSize.value, estimatedFitSize)).sp
+    val safetyAdjustedSize = if (estimatedFitSize < baseFontSize.value) {
+        val usableWidth = (availableWidth - 12.dp).coerceAtLeast(0.dp)
+        usableWidth.value / (text.length.coerceAtLeast(1) * 0.6f)
+    } else {
+        estimatedFitSize
+    }
+    return minOf(baseFontSize.value, maxOf(minimumFontSize.value, safetyAdjustedSize)).sp
 }
 
 /** Preserves the metric's intended type size until width requires shrinking it. */
@@ -152,13 +156,14 @@ internal fun metricFontSize(text: String, availableWidth: Dp, baseFontSize: Text
 private fun AdaptiveMetricValue(text: String, availableWidth: Dp, baseFontSize: TextUnit) {
     Text(
         text = text,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
         fontSize = metricFontSize(text, availableWidth, baseFontSize),
         fontWeight = FontWeight.Bold,
         color = BrightYellow,
         fontFamily = FontFamily.Monospace,
         maxLines = 1,
         softWrap = false,
-        overflow = TextOverflow.Clip,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
