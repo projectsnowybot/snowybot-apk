@@ -17,5 +17,3 @@ there is no guarantee of success
 this is a just-dice.com bot for funds use clam coin there
 
 for android 7.0+
-
-https://www.mediafire.com/file/uavupo17itqzqfp/snowybot.apk/file
